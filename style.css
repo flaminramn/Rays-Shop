@@ -81,3 +81,10 @@ footer {
   padding: 20px;
   flex-grow: 1;
 }
+
+.centered-paragraph {
+  max-width: 500px;
+  margin: 40px auto;
+  text-align: center;
+  line-height: 1.6;
+}
