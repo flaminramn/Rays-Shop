@@ -7,6 +7,21 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+  <p>Server time: <span id="server-time"></span></p>
+  <script>
+  fetch('/api/time')
+    .then(response => response.json())
+    .then(data => {
+      const timeElement = document.getElementById('server-time');
+      const serverTime = new Date(data.time).toLocaleString();
+      timeElement.textContent = serverTime;
+    })
+    .catch(error => {
+      console.error('Error fetching time:', error);
+    });
+</script>
+
+
   <header>
     <h1>Rays Shop</h1>
     <p>Showcasing projects Ray is building and working on.</p>
