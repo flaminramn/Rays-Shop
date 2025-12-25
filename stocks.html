@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stock Quotes - Rays Shop</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header>
+    <h1>Stock Related Info</h1>
+    <a href="index.html">← Back to Home</a>
+  </header>
+  <!-- TradingView Widget for IWM -->
+<div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js">
+  {
+    "symbols": [
+      { "proName": "AMEX:IWM", "title": "IWM" },
+      { "proName": "AMEX:SPY", "title": "SPY" },
+      { "proName": "NASDAQ:QQQ", "title": "QQQ" },
+      { "proName": "NASDAQ:AAPL", "title": "Apple" },
+      { "proName": "NASDAQ:TSLA", "title": "Tesla" }
+    ],
+    "colorTheme": "light",
+    "isTransparent": false,
+    "displayMode": "adaptive",
+    "locale": "en"
+  }
+  </script>
+</div>
+
+
+  <main>
+    <h2>Add New Spread Trade</h2>
+<form id="trade-form">
+  <input name="symbol" placeholder="Symbol (e.g., IWM)" required />
+  <input name="type" placeholder="Spread Type (e.g., Put Credit Spread)" required />
+  
+  <input name="strike1" placeholder="Strike 1 (e.g., 190)" required />
+  <input name="strike2" placeholder="Strike 2 (e.g., 185)" required />
+  
+  <input name="expiration" placeholder="Expiration (e.g., Jan 19, 2026)" required />
+  <input name="credit" placeholder="Credit Received (e.g., $1.05)" required />
+  
+  <input name="status" placeholder="Status (Open/Closed)" required />
+  
+  <button type="submit">Add Trade</button>
+</form>
+
+
+<h2>My Spread Trades</h2>
+<table border="1" id="trades-table">
+  <thead>
+    <tr>
+      <th>Symbol</th>
+      <th>Type</th>
+      <th>Strike 1</th>
+      <th>Strike 2</th>
+      <th>Expiration</th>
+      <th>Credit</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  async function loadTrades() {
+    const res = await fetch('/api/trades');
+    const trades = await res.json();
+    const tbody = document.querySelector('#trades-table tbody');
+    tbody.innerHTML = '';
+
+    trades.forEach(trade => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${trade.symbol}</td>
+        <td>${trade.type}</td>
+        <td>${trade.strike1}</td>
+        <td>${trade.strike2}</td>
+        <td>${trade.expiration}</td>
+        <td>${trade.credit}</td>
+        <td>${trade.status}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  document.getElementById('trade-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const data = Object.fromEntries(new FormData(form));
+
+    await fetch('/api/trades', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    form.reset();
+    loadTrades();
+  });
+
+  loadTrades();
+</script>
+
+
+  </main>
+
+  <footer>
+    <p>Contact: <a href="mailto:flaminramn@gmail.com">flaminramn@gmail.com</a></p>
+  </footer>
+</body>
+</html>
