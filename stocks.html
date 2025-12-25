@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Stock Quotes - Rays Shop</title>
-  <link rel="stylesheet" href="style.css"/>
-</head>
-<body>
-  <header>
-    <h1>Stock Related Info</h1>
-    <a href="index.html">← Back to Home</a>
-  </header>
   <!-- TradingView Widget for IWM -->
 <div class="tradingview-widget-container">
     <div class="tradingview-widget-container__widget"></div>
@@ -30,100 +20,138 @@
   }
   </script>
 </div>
-
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Option Trades Tracker</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f0f0f0; }
+    input, button { margin: 0.2em; padding: 0.4em; }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stock Quotes - Rays Shop</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
   <main>
-    <h2>Add New Spread Trade</h2>
-<form id="trade-form">
-  <input name="symbol" placeholder="Symbol (e.g., IWM)" required />
-  <input name="type" placeholder="Spread Type (e.g., Put Credit Spread)" required />
-  
-  <input name="strike1" placeholder="Strike 1 (e.g., 190)" required />
-  <input name="strike2" placeholder="Strike 2 (e.g., 185)" required />
-  
-  <input name="expiration" placeholder="Expiration (e.g., Jan 19, 2026)" required />
-  <input name="credit" placeholder="Credit Received (e.g., $1.05)" required />
-  
-  <input name="status" placeholder="Status (Open/Closed)" required />
-  
-  <button type="submit">Add Trade</button>
-</form>
-
-
-<h2>My Spread Trades</h2>
-<table border="1" id="trades-table">
+  <h1>Option Trades Tracker</h1>
+  <form id="trade-form">
+    <input name="contractSymbol" placeholder="Contract Symbol (e.g., IWM260109P00244000)" required />
+    <input name="type" placeholder="Type (Call/Put)" required />
+    <input name="strike1" placeholder="Strike 1 (e.g., 244)" required />
+    <input name="strike2" placeholder="Strike 2 (e.g., 240)" required />
+    <input name="expiration" placeholder="Expiration (e.g., 2026-01-09)" required />
+    <input name="credit" placeholder="Credit (e.g., $1.05)" required />
+    <input name="status" placeholder="Status (Open/Closed)" required />
+    <button type="submit">Add Trade</button>
+  </form>
+  <h2>My Trades</h2>
+  <table id="trades-table">
+    <thead>
+      <tr>
+        <th>Contract Symbol</th>
+        <th>Type</th>
+        <th>Strike 1</th>
+        <th>Strike 2</th>
+        <th>Expiration</th>
+        <th>Credit</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <h2>Live Option Prices (Delayed)</h2>
+<table id="live-options-table">
   <thead>
     <tr>
-      <th>Symbol</th>
-      <th>Type</th>
-      <th>Strike 1</th>
-      <th>Strike 2</th>
-      <th>Expiration</th>
-      <th>Credit</th>
-      <th>Status</th>
+      <th>Contract Symbol</th>
+      <th>Last Price</th>
+      <th>Bid</th>
+      <th>Ask</th>
     </tr>
   </thead>
-  <tbody></tbody>
+  <tbody>
+    <tr>
+      <td><a id="opt1-link" href="https://finance.yahoo.com/quote/IWM260109P00246000" target="_blank">IWM260109P00246000</a></td>
+      <td id="opt1-last">Loading...</td>
+      <td id="opt1-bid">Loading...</td>
+      <td id="opt1-ask">Loading...</td>
+    </tr>
+    <tr>
+      <td><a id="opt2-link" href="https://finance.yahoo.com/quote/IWM260109P00244000" target="_blank">IWM260109P00244000</a></td>
+      <td id="opt2-last">Loading...</td>
+      <td id="opt2-bid">Loading...</td>
+      <td id="opt2-ask">Loading...</td>
+    </tr>
+  </tbody>
 </table>
-
-<script>
-  async function loadTrades() {
-    try {
-      const res = await fetch('/api/trades');
-      if (!res.ok) throw new Error('Failed to load trades');
-      const trades = await res.json();
+  <script>
+    function getTrades() {
+      try { return JSON.parse(localStorage.getItem('option_trades') || '[]'); } catch { return []; }
+    }
+    function saveTrades(trades) {
+      localStorage.setItem('option_trades', JSON.stringify(trades));
+    }
+    function renderTrades() {
+      const trades = getTrades();
       const tbody = document.querySelector('#trades-table tbody');
       tbody.innerHTML = '';
-
-      if (trades.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7">No trades available</td></tr>';
-      } else {
-        trades.forEach(trade => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${trade.symbol}</td>
-            <td>${trade.type}</td>
-            <td>${trade.strike1}</td>
-            <td>${trade.strike2}</td>
-            <td>${trade.expiration}</td>
-            <td>${trade.credit}</td>
-            <td>${trade.status}</td>
-          `;
-          tbody.appendChild(row);
-        });
+      if (!trades.length) {
+        tbody.innerHTML = '<tr><td colspan="7">No trades yet</td></tr>';
+        return;
       }
-    } catch (err) {
-      console.error('Error loading trades:', err);
-      alert('Error loading trades. Please try again later.');
-    }
-  }
-
-  document.getElementById('trade-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const data = Object.fromEntries(new FormData(form));
-
-    try {
-      const res = await fetch('/api/trades', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+      trades.forEach(trade => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><a href="https://finance.yahoo.com/quote/${trade.contractSymbol}" target="_blank">${trade.contractSymbol}</a></td>
+          <td>${trade.type}</td>
+          <td>${trade.strike1}</td>
+          <td>${trade.strike2}</td>
+          <td>${trade.expiration}</td>
+          <td>${trade.credit}</td>
+          <td>${trade.status}</td>
+        `;
+        tbody.appendChild(row);
       });
-      if (!res.ok) throw new Error('Failed to add trade');
-      form.reset();
-      loadTrades();
-    } catch (err) {
-      console.error('Error adding trade:', err);
-      alert('Error adding trade. Please try again later.');
     }
+    document.getElementById('trade-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this));
+      const trades = getTrades();
+      trades.push(data);
+      saveTrades(trades);
+      this.reset();
+      renderTrades();
+    });
+    renderTrades();
+    // --- Live Option Price Fetcher ---
+  // You can change these symbols to any valid Yahoo option contract symbol
+  const optionSymbols = [
+    'IWM260109C00246000', // Jan 9, 2026, 246 Call
+    'IWM260109P00246000'  // Jan 9, 2026, 246 Put
+  ];
+  optionSymbols.forEach((symbol, i) => {
+    fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbol}`)
+      .then(r => r.json())
+      .then(data => {
+        const q = data.quoteResponse.result[0];
+        document.getElementById(`opt${i+1}-last`).textContent = q.regularMarketPrice ?? 'N/A';
+        document.getElementById(`opt${i+1}-bid`).textContent = q.bid ?? 'N/A';
+        document.getElementById(`opt${i+1}-ask`).textContent = q.ask ?? 'N/A';
+        document.getElementById(`opt${i+1}-link`).textContent = symbol;
+        document.getElementById(`opt${i+1}-link`).href = `https://finance.yahoo.com/quote/${symbol}`;
+      })
+      .catch(() => {
+        document.getElementById(`opt${i+1}-last`).textContent = 'Error';
+        document.getElementById(`opt${i+1}-bid`).textContent = 'Error';
+        document.getElementById(`opt${i+1}-ask`).textContent = 'Error';
+      });
   });
-
-  loadTrades();
-</script>
-
-
+  </script>
   </main>
-
   <footer>
     <p>Contact: <a href="mailto:flaminramn@gmail.com">flaminramn@gmail.com</a></p>
   </footer>
