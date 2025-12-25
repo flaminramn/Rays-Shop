@@ -68,24 +68,34 @@
 
 <script>
   async function loadTrades() {
-    const res = await fetch('/api/trades');
-    const trades = await res.json();
-    const tbody = document.querySelector('#trades-table tbody');
-    tbody.innerHTML = '';
+    try {
+      const res = await fetch('/api/trades');
+      if (!res.ok) throw new Error('Failed to load trades');
+      const trades = await res.json();
+      const tbody = document.querySelector('#trades-table tbody');
+      tbody.innerHTML = '';
 
-    trades.forEach(trade => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${trade.symbol}</td>
-        <td>${trade.type}</td>
-        <td>${trade.strike1}</td>
-        <td>${trade.strike2}</td>
-        <td>${trade.expiration}</td>
-        <td>${trade.credit}</td>
-        <td>${trade.status}</td>
-      `;
-      tbody.appendChild(row);
-    });
+      if (trades.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7">No trades available</td></tr>';
+      } else {
+        trades.forEach(trade => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${trade.symbol}</td>
+            <td>${trade.type}</td>
+            <td>${trade.strike1}</td>
+            <td>${trade.strike2}</td>
+            <td>${trade.expiration}</td>
+            <td>${trade.credit}</td>
+            <td>${trade.status}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+    } catch (err) {
+      console.error('Error loading trades:', err);
+      alert('Error loading trades. Please try again later.');
+    }
   }
 
   document.getElementById('trade-form').addEventListener('submit', async (e) => {
@@ -93,14 +103,19 @@
     const form = e.target;
     const data = Object.fromEntries(new FormData(form));
 
-    await fetch('/api/trades', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-
-    form.reset();
-    loadTrades();
+    try {
+      const res = await fetch('/api/trades', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('Failed to add trade');
+      form.reset();
+      loadTrades();
+    } catch (err) {
+      console.error('Error adding trade:', err);
+      alert('Error adding trade. Please try again later.');
+    }
   });
 
   loadTrades();
