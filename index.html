@@ -7,19 +7,27 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <p>Server time: <span id="server-time"></span></p>
+  <h2>Server Time:</h2>
+  <p id="time">Loading...</p>
+
   <script>
-  fetch('/api/time')
-    .then(response => response.json())
-    .then(data => {
-      const timeElement = document.getElementById('server-time');
-      const serverTime = new Date(data.time).toLocaleString();
-      timeElement.textContent = serverTime;
-    })
-    .catch(error => {
-      console.error('Error fetching time:', error);
-    });
-    </script>
+  async function fetchTime() {
+    try {
+      const res = await fetch('/api/time');
+      const data = await res.json();
+      document.getElementById('time').textContent = data.time;
+    } catch (err) {
+      document.getElementById('time').textContent = 'Error fetching time';
+      console.error('Error fetching time:', err);
+    }
+  }
+
+  // Fetch time when the page loads
+  fetchTime();
+
+  // Optional: Refresh time every 30 seconds
+  setInterval(fetchTime, 30000);
+  </script>
 
 
   <header>
