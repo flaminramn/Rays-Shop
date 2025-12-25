@@ -11,22 +11,21 @@
   <p id="time">Loading...</p>
 
   <script>
-  async function fetchTime() {
-    try {
-      const res = await fetch('/api/time');
-      const data = await res.json();
-      document.getElementById('time').textContent = data.time;
-    } catch (err) {
-      document.getElementById('time').textContent = 'Error fetching time';
-      console.error('Error fetching time:', err);
-    }
+  function updateTime() {
+    const timeString = new Date().toLocaleString("en-US", {
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true
+    });
+    document.getElementById('time').textContent = timeString;
   }
 
-  // Fetch time when the page loads
-  fetchTime();
+  // Update time when the page loads
+  updateTime();
 
-  // Optional: Refresh time every 30 seconds
-  setInterval(fetchTime, 30000);
+  // Refresh time every 1 second
+  setInterval(updateTime, 1000);
   </script>
 
 
@@ -41,7 +40,7 @@
       <a href="computer.html" class="card">💻 Computer Projects</a>
       <a href="woodworking.html" class="card">🪵 Woodworking Projects</a>
       <a href="mechanic.html" class="card">🔧 Mechanic Projects</a>
-      <a href="stocks.html" class="card">� Stocks Quotes</a>
+      <a href="stocks.html" class="card">📈 Stocks Quotes</a>
     </section>
   </main>
 
