@@ -1,7 +1,15 @@
 module.exports = async function (context, req) {
-  const now = new Date().toISOString();
+  const now = new Date().toLocaleString("en-US", {
+    timeZone: "America/New_York", // Change to your timezone
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: true
+  });
+
   context.res = {
-    headers: { 'Content-Type': 'application/json' },
+    status: 200,
+    headers: { "Content-Type": "application/json" },
     body: { time: now }
   };
 };
