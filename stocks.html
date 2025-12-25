@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css"/>
   <!-- TradingView Widget for IWM -->
 <div class="tradingview-widget-container">
     <div class="tradingview-widget-container__widget"></div>
@@ -30,14 +33,13 @@
     th { background: #f0f0f0; }
     input, button { margin: 0.2em; padding: 0.4em; }
   </style>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Stock Quotes - Rays Shop</title>
-  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+  <header>
+    <h1>Option Trades Tracker</h1>
+    <a href="index.html">&larr; Back to Home</a>
+  </header>
   <main>
-  <h1>Option Trades Tracker</h1>
   <form id="trade-form">
     <input name="contractSymbol" placeholder="Contract Symbol (e.g., IWM260109P00244000)" required />
     <input name="type" placeholder="Type (Call/Put)" required />
