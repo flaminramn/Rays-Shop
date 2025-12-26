@@ -5,6 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Computer Projects - Rays Shop</title>
   <link rel="stylesheet" href="style.css"/>
+  <h2>Server Time:</h2>
+  <p id="time">Loading...</p>
+
+  <script>
+  function updateTime() {
+    const timeString = new Date().toLocaleString("en-US", {
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true
+    });
+    document.getElementById('time').textContent = timeString;
+  }
+
+  // Update time when the page loads
+  updateTime();
+
+  // Refresh time every 1 second
+  setInterval(updateTime, 1000);
+  </script>
 </head>
 <body>
   <header>
