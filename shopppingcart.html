@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Form with Shopping Cart</title>
+  <style>
+    .shopping-cart {
+      display: none;
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 300px;
+      height: 100%;
+      background-color: #fff;
+      box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
+      padding: 16px;
+      z-index: 1000;
+    }
+    .shopping-cart ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .shopping-cart h2 {
+      margin: 0 0 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Contact Page</h1>
+  
+  <form action="#" method="post">
+    <label for="firstName">First Name:</label><br>
+    <input type="text" id="firstName" name="firstName" required><br><br>
+  
+    <label for="lastName">Last Name:</label><br>
+    <input type="text" id="lastName" name="lastName" required><br><br>
+  
+    <label for="message">Message:</label><br>
+    <textarea id="message" name="message" rows="5" cols="30" required></textarea><br><br>
+  
+    <button type="submit">Submit</button>
+  </form>
+
+  <!-- Shopping Cart Section -->
+  <div id="cart" class="shopping-cart">
+    <h2>Shopping Cart</h2>
+    <ul id="cart-items">
+      <!-- List of items will dynamically load here -->
+    </ul>
+    <p>Total: $<span id="cart-total">0.00</span></p>
+    <button id="checkout">Checkout</button>
+  </div>
+  
+  <!-- Include a button to open the cart -->
+  <button id="view-cart">View Cart</button>
+
+  <script>
+    const cart = [];
+    const cartElement = document.getElementById('cart');
+    const cartItemsElement = document.getElementById('cart-items');
+    const cartTotalElement = document.getElementById('cart-total');
+
+    // Function to handle adding an item to the cart
+    function addToCart(itemName, itemPrice) {
+      cart.push({ name: itemName, price: parseFloat(itemPrice) });
+      updateCart();
+    }
+
+    // Function to update the cart
+    function updateCart() {
+      cartItemsElement.innerHTML = '';
+      let total = 0;
+      cart.forEach((item) => {
+        total += item.price;
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - $${item.price.toFixed(2)}`;
+        cartItemsElement.appendChild(li);
+      });
+      cartTotalElement.textContent = total.toFixed(2);
+    }
+
+    // Function to toggle cart visibility
+    document.getElementById('view-cart').addEventListener('click', () => {
+      cartElement.style.display = cartElement.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Example usage: Add items dynamically in your code
+    addToCart('Sample Product', 19.99);
+    addToCart('Another Product', 9.99);
+  </script>
+</body>
+</html>
